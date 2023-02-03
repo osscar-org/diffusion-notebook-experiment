@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 import ipywidgets as ipw
 from scipy.stats import linregress
 import traitlets
+import datetime
 
 class NotoLogger:
     def __init__(self, event = None):
@@ -44,7 +45,7 @@ class LoggingPlay(ipw.Play):
 
 def show_diffusion():
     # Global variables in sub-function need to be declared global also here
-    global trajectory, r_std_sq, slope, intercept, dots_art, traj_art, circle, ax1, ax2, ax3
+    global play, trajectory, r_std_sq, slope, intercept, dots_art, traj_art, circle, ax1, ax2, ax3
     
     eventLogger = NotoLogger()
 
@@ -64,7 +65,9 @@ def show_diffusion():
 
     run_btn = ipw.Button(description='Simulate')
     run_btn.style.button_color = 'green'
-    play = LoggingPlay(value=0, min=0, max=nsteps_slider.value, step=100, disabled=True, interval=500) # iterate frame with 500ms interval
+    play = LoggingPlay(value=0, min=0,
+        max=nsteps_slider.value, step=100, disabled=True,
+        interval=500, show_repeat=False) # iterate frame with 500ms interval
 
     trajectory = []         # trajectory of all dots
     r_std_sq = np.array([]) # square standard radius
@@ -278,7 +281,13 @@ def show_diffusion():
         plot_frame(change)
 
     def frame_slider_callback(change):
-        NotoLogger({'where': 'frame_slider_callback', 'data': change})
+        global play
+
+        # Log only if not playing.
+        # Note: we lose messages if the user clicks to change frame while playing,
+        # but this is still better than logging a line at every played frame
+        if not play._playing:
+            NotoLogger({'where': 'frame_slider_callback', 'data': change})
         plot_frame(change)
 
     # link widgets
