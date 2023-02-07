@@ -1,0 +1,54 @@
+- 53 events for fd03a9a82f2ebe58b0e26a6b1df1a7e5065b1f69
+      0s: Button 'Simulate'
+      2s: IntSlider 'Time step # $(t)$' from value 0 to 100
+      2s: LoggingPlay from value False to True
+     28s: LoggingPlay from value True to False
+    413s: IntSlider 'Number of points' from value 1000 to 1501
+    415s: IntSlider 'Number of points' from value 1501 to 1101
+    416s: IntSlider 'Number of points' from value 1101 to 1001
+    417s: IntSlider 'Number of points' from value 1001 to 901
+    417s: IntSlider 'Number of points' from value 901 to 801
+    418s: IntSlider 'Number of points' from value 801 to 901
+    418s: IntSlider 'Number of points' from value 901 to 1001
+    423s: FloatSlider 'Step size' from value 0.05 to 0.03
+    425s: IntSlider 'Number of steps' from value 5000 to 3200
+    428s: Checkbox 'Show trajectory of one particle' from value False to True
+    432s: Button 'Simulate'
+    434s: IntSlider 'Time step # $(t)$' from value 0 to 100
+    434s: LoggingPlay from value False to True
+    451s: LoggingPlay from value True to False
+    456s: IntSlider 'Time step # $(t)$' from value 3200 to 1500
+    459s: IntSlider 'Time step # $(t)$' from value 1500 to 900
+    460s: IntSlider 'Time step # $(t)$' from value 900 to 1000
+    461s: IntSlider 'Time step # $(t)$' from value 1000 to 1100
+    461s: IntSlider 'Time step # $(t)$' from value 1100 to 1200
+    462s: IntSlider 'Time step # $(t)$' from value 1200 to 1300
+    462s: IntSlider 'Time step # $(t)$' from value 1300 to 1400
+    463s: IntSlider 'Time step # $(t)$' from value 1400 to 1500
+    463s: IntSlider 'Time step # $(t)$' from value 1500 to 1600
+    464s: IntSlider 'Time step # $(t)$' from value 1600 to 1700
+    464s: IntSlider 'Time step # $(t)$' from value 1700 to 1800
+    465s: IntSlider 'Time step # $(t)$' from value 1800 to 1900
+    465s: IntSlider 'Time step # $(t)$' from value 1900 to 2000
+    466s: IntSlider 'Time step # $(t)$' from value 2000 to 2200
+    466s: IntSlider 'Time step # $(t)$' from value 2200 to 2300
+    467s: IntSlider 'Time step # $(t)$' from value 2300 to 2400
+    467s: IntSlider 'Time step # $(t)$' from value 2400 to 2600
+    468s: IntSlider 'Time step # $(t)$' from value 2600 to 2900
+    468s: IntSlider 'Time step # $(t)$' from value 2900 to 3000
+    469s: IntSlider 'Time step # $(t)$' from value 3000 to 3100
+    469s: IntSlider 'Time step # $(t)$' from value 3100 to 3200
+    477s: Checkbox 'Show trajectory of one particle' from value True to False
+    478s: Checkbox 'Show trajectory of one particle' from value False to True
+    482s: FloatSlider 'Step size' from value 0.03 to 0.1
+    482s: IntSlider 'Time step # $(t)$' from value 3200 to 0
+    484s: Button 'Simulate'
+    486s: IntSlider 'Time step # $(t)$' from value 0 to 100
+    486s: LoggingPlay from value False to True
+    502s: LoggingPlay from value True to False
+    513s: IntSlider 'Number of points' from value 1001 to 3201
+    513s: IntSlider 'Time step # $(t)$' from value 3200 to 0
+    515s: Button 'Simulate'
+    518s: IntSlider 'Time step # $(t)$' from value 0 to 100
+    518s: LoggingPlay from value False to True
+    534s: LoggingPlay from value True to False
