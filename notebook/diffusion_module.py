@@ -58,7 +58,7 @@ class LoggingPlay(ipw.Play):
 
 def show_diffusion():
     # Global variables in sub-function need to be declared global also here
-    global play, trajectory, r_std_sq, slope, intercept, dots_art, traj_art, circle, ax1, ax2, ax3, nsteps_slider, frame_slider
+    global play, trajectory, px_slider, r_std_sq, slope, intercept, dots_art, traj_art, circle, ax1, ax2, ax3, nsteps_slider, frame_slider
     
     eventLogger = NotoLogger()
 
@@ -71,7 +71,9 @@ def show_diffusion():
     ndots_slider = ipw.IntSlider(value=1000, min=1, max=5000, step=100, description='Number of points', style= {'description_width': 'initial'}, layout=layout, continuous_update=False) # number of points
     stepsize_slider = ipw.FloatSlider(value=0.05, min=0.01, max=0.1, step=0.01, description='Step size', continuous_update=False, readout=True, readout_format='.2f', style= {'description_width': 'initial'}, layout=layout) # max step size
     nsteps_slider = ipw.IntSlider(value=5000, min=100, max=10000, step=100, description='Number of steps', continuous_update=False, disabled=False, style= {'description_width': 'initial'}, layout=layout)
+    px_slider = ipw.FloatSlider(value=0.5, min=0.45, max=0.55, step=0.01, description='$p_x$', continuous_update=False, readout=True, readout_format='.2f', style= {'description_width': 'initial'}, layout=layout) # max step size
     frame_slider = ipw.IntSlider(value=0, min=0, max=nsteps_slider.value, step=100, description='Time step # $(t)$', continuous_update=False, readout=True, disabled=True, style= {'description_width': 'initial'}, layout=layout) # step index indicator and slider
+    
 
     traj_chkbox = ipw.Checkbox(value=False,description='Show trajectory of one particle', disabled=False, indent=False)
     map_chkbox = ipw.Checkbox(value=False,description='Show density map', disabled=False, indent=False)
@@ -108,13 +110,18 @@ def show_diffusion():
 
         # draw dots  
         ax.plot(frame_coords[:,0], frame_coords[:,1], '.', alpha=0.1, zorder=11)
-        # draw circle
-        circle_std = plt.Circle((0, 0), r_std, color='green', linewidth=2, fill=False,zorder=12, label='$r_{std}$')
-        circle_l = plt.Circle((0, 0), r_l, color='red', fill=False, linestyle='dashed',zorder=12, label='$r_{l}$')
-        ax.add_patch(circle_std)
-        ax.add_patch(circle_l)
+        # draw circles if p==0.5
+        if px_slider.value == 0.5:
+            circle_std = plt.Circle((0, 0), r_std, color='green', linewidth=2, fill=False,zorder=12, label='$r_{std}$')
+            ax.add_patch(circle_std)
         # draw trajectory of first dots
         if show_traj:
+            full_traj = trajectory[:frame_idx:100,:]
+            full_traj_y = trajectory[:frame_idx:100,:]
+            
+            step_displacement = np.sqrt(((full_traj[1:, :] - full_traj[:-1, :])**2).sum(axis=1))
+            ## TODO: split trajectory if at boundary, plot in a loop
+            
             ax.plot(trajectory[:frame_idx:100,0,0], trajectory[:frame_idx:100,0,1], linewidth=2, color='purple', zorder=13)
          # analytical density map for the diffusion plot as a comparison for the actual simulation pattern
         if show_map:
@@ -126,7 +133,8 @@ def show_diffusion():
             gy = expected_1d(y, N, l)
             H = np.ma.outerproduct(gx, gy).data
             ax.imshow(H, origin='lower', interpolation='none', extent=[box_xrange[0], box_xrange[1], box_yrange[0], box_yrange[1]],aspect='equal', alpha=1, cmap='Reds')
-        ax.legend(loc='lower right', bbox_to_anchor=(1, 1.05))
+        if px_slider.value == 0.5:            
+            ax.legend(loc='lower right', bbox_to_anchor=(1, 1.05))
 
     def expected_1d(x, N, l):
         """A helper function for plot 2.
@@ -164,8 +172,9 @@ def show_diffusion():
         ax.set_xlabel("x")
         ax.set_ylabel("frequency")
         ax.bar(bins[:-1]+h_offset, hist, ec='k', width=bin_width)
-        ax.plot(r, gr, 'r--',label='Expected distribution')
-        ax.legend(loc='lower right', bbox_to_anchor=(1, 1.05))
+        if px_slider.value == 0.5:
+            ax.plot(r, gr, 'r--',label='Expected distribution')
+            ax.legend(loc='lower right', bbox_to_anchor=(1, 1.05))
 
     def plot_radii(ax):
         """draw Plot 3
@@ -175,19 +184,20 @@ def show_diffusion():
         nsteps = nsteps_slider.value
         ax.clear()
 
-        # plot r_std^2 (MSD) vs t
-        interval = 500
-        ax.plot(r_std_sq[::interval,0], r_std_sq[::interval,1], 'o') # plot every 100 steps
-        ax.plot(frame_idx, r_std_sq[frame_idx, 1], 'o', color='green', label='current step')
+        if px_slider.value == 0.5:
+            # plot r_std^2 (MSD) vs t
+            interval = 500
+            ax.plot(r_std_sq[::interval,0], r_std_sq[::interval,1], 'o') # plot every 100 steps
+            ax.plot(frame_idx, r_std_sq[frame_idx, 1], 'o', color='green', label='current step')
 
-        # plot linear fitting line
-        lx = np.linspace(0,nsteps,10)
-        ly = lx * slope + intercept
-        ax.plot(lx, ly, 'r--', lw=2, label='fit: {:.2e} t + {:.2f}'.format(slope, intercept))
+            # plot linear fitting line
+            lx = np.linspace(0,nsteps,10)
+            ly = lx * slope + intercept
+            ax.plot(lx, ly, 'r--', lw=2, label='fit: {:.2e} t + {:.2f}'.format(slope, intercept))
 
-        ax.set_xlabel('time step # $(t)$')
-        ax.set_ylabel('$r_{std}^2$')
-        ax.legend(loc='lower right', bbox_to_anchor=(1, 1.05))
+            ax.set_xlabel('time step # $(t)$')
+            ax.set_ylabel('$r_{std}^2$')
+            ax.legend(loc='lower right', bbox_to_anchor=(1, 1.05))
 
     def plot_frame(change):
         ''' plot current frame for all axis'''
@@ -208,7 +218,7 @@ def show_diffusion():
         - run diffusion simulation and store trajectory of all dots in trajectory
         - do linear fitting on r_std and t for plot 3
         '''
-        global trajectory, r_std_sq, slope, intercept
+        global trajectory, r_std_sq, slope, intercept, px_slider
 
         # I mage the 'data' closer to a callaback observed for other
         # widgets (buttons instead return only the button
@@ -236,8 +246,16 @@ def show_diffusion():
         num_steps = nsteps_slider.value
         for i in range(num_steps):
             # two different ways of displacement with same distribution
-    #         random_displacement = (np.random.random((N, 2)) - 0.5) * 2 * stepsize # continuous
-            random_displacement = (np.random.choice([-1,1],(N, 2)))  * stepsize # discrete
+            # random_displacement = (np.random.random((N, 2)) - 0.5) * 2 * stepsize # continuous
+    
+            # Probability to move to the right or to go up
+            p_right = px_slider.value
+            p_up = 0.5
+            
+            random_displacement_x = (np.random.choice([-1,1],N, p=[1-p_right, p_right]))  * stepsize # discrete
+            random_displacement_y = (np.random.choice([-1,1],N, p=[1-p_up, p_up]))  * stepsize # discrete
+            random_displacement = np.array([random_displacement_x, random_displacement_y]).T
+            
             new_positions = trajectory[-1] + random_displacement
             # Some points might have gone beyond the box.
             # I could either reflect them back as a hard wall, or just use PBC. For simplicity, I use PBC
@@ -327,10 +345,11 @@ def show_diffusion():
     ndots_slider.observe(stop, names='value', type='change')
     stepsize_slider.observe(stop, names='value', type='change')
     nsteps_slider.observe(stop, names='value', type='change')
+    px_slider.observe(stop, names='value', type='change')
 
     # group widgets
     play_wdgt = ipw.HBox([run_btn, play])
-    ctrl_widgets = ipw.VBox([ndots_slider, stepsize_slider, nsteps_slider, play_wdgt,  traj_chkbox, frame_slider])
+    ctrl_widgets = ipw.VBox([ndots_slider, stepsize_slider, nsteps_slider, px_slider, play_wdgt,  traj_chkbox, frame_slider])
 
     # frame_idx = 0
     # use Output to wrap the plot for better layout
