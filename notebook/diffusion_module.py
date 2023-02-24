@@ -116,13 +116,34 @@ def show_diffusion():
             ax.add_patch(circle_std)
         # draw trajectory of first dots
         if show_traj:
-            full_traj = trajectory[:frame_idx:100,:]
-            full_traj_y = trajectory[:frame_idx:100,:]
+            full_traj = trajectory[:frame_idx:20,0,:]
             
             step_displacement = np.sqrt(((full_traj[1:, :] - full_traj[:-1, :])**2).sum(axis=1))
-            ## TODO: split trajectory if at boundary, plot in a loop
-            
-            ax.plot(trajectory[:frame_idx:100,0,0], trajectory[:frame_idx:100,0,1], linewidth=2, color='purple', zorder=13)
+
+            # Get the size (both x and y) of the box
+            box_size = min(
+                abs(box_xrange[1] - box_xrange[0]),
+                abs(box_yrange[1] - box_yrange[0]))
+            # Find points where the displacement is larger than 1/6 of the box
+            # This is not perfect, e.g. it depends on the step size, and might not
+            # work near a corner of the box. It would be better to get directly
+            # the information when generating the data, before applying PBC.
+            # Nevertheless, this is good enough for now (it's just for visualization
+            # purposes).
+            # If any of the two x,y coordinates jumps, I want to mark it as a
+            # point to break the trajectory
+            # I get the index of the points where the jump is too large either
+            # on x or on y. Note that the step displacement has length reduced 
+            # by 1 w.r.t. to the full_trajectory.
+            # We therefore add 1 (we want to break when the jump happens,
+            # not at the step before)
+            breaking_points = np.arange(len(step_displacement))[step_displacement > box_size / 6.] + 1
+            # I want now to define segments. I always want to have 0 as the first
+            # point and len(full_traj) as the last point
+            breaking_points = np.append(np.insert(breaking_points, 0, 0), len(full_traj))
+
+            for segment_start, segment_end in zip(breaking_points[:-1], breaking_points[1:]): 
+                ax.plot(full_traj[segment_start:segment_end,0], full_traj[segment_start:segment_end,1], linewidth=2, color='purple', zorder=13)
          # analytical density map for the diffusion plot as a comparison for the actual simulation pattern
         if show_map:
             x = np.linspace(-10, 10, 30)
