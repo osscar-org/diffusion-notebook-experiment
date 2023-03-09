@@ -68,7 +68,7 @@ def show_diffusion():
     r = np.linspace(0,10,100)
 
     layout = ipw.Layout(width='auto', height='30px')
-    ndots_slider = ipw.IntSlider(value=1000, min=1, max=5000, step=100, description='Number of points', style= {'description_width': 'initial'}, layout=layout, continuous_update=False) # number of points
+    ndots_slider = ipw.IntSlider(value=1000, min=1, max=1000, step=10, description='Number of points', style= {'description_width': 'initial'}, layout=layout, continuous_update=False) # number of points
     stepsize_slider = ipw.FloatSlider(value=0.05, min=0.01, max=0.1, step=0.01, description='Step size', continuous_update=False, readout=True, readout_format='.2f', style= {'description_width': 'initial'}, layout=layout) # max step size
     nsteps_slider = ipw.IntSlider(value=5000, min=100, max=10000, step=100, description='Number of steps', continuous_update=False, disabled=False, style= {'description_width': 'initial'}, layout=layout)
     px_slider = ipw.FloatSlider(value=0.5, min=0.45, max=0.55, step=0.01, description='$p_x$', continuous_update=False, readout=True, readout_format='.2f', style= {'description_width': 'initial'}, layout=layout) # max step size
