@@ -305,6 +305,7 @@ def show_diffusion():
 
         NotoLogger({'where': 'plot_frame', 'data': change})
         play.disabled = True
+        play.playing = False
         frame_slider.value = 0
         # reset all the axes
 
@@ -386,3 +387,5 @@ def show_diffusion():
 
     initialize_plot()
     display(ipw.VBox([ipw.HBox([plotup_out]), ipw.HBox([ctrl_widgets, plotdwn_out])]))
+
+
