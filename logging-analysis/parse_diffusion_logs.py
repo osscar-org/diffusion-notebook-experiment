@@ -1,8 +1,8 @@
 import json
 from collections import defaultdict
 import pylab as plt
-#from adjustText import adjust_text
 
+ADJUST_TEXT = False
 events_by_uid = defaultdict(list)
 
 rows = [
@@ -111,7 +111,11 @@ if __name__ == "__main__":
                 else:
                     plt.plot([time], [row_idx], '.', color='red')
                 # will show the text and append it
-                texts.append(plt.text(time, row_idx, str(event['data']['to_value'])))
+                if isinstance(event['data']['to_value'], float):
+                    str_val = f"{event['data']['to_value']:.2f}"
+                else:
+                    str_val = str(event['data']['to_value'])
+                texts.append(plt.text(time, row_idx, str_val))
             else:
                 raise ValueError("Unknown event")
                 #plt.plot([time], [row_idx], '.', color='orange')
@@ -132,6 +136,8 @@ if __name__ == "__main__":
         plt.xlim(-1, events[-1]['timestamp'] - first_timestamp+1)
         plt.title(f"Log for user {uid}")
         # (Optionally) Fix the text location
-        #adjust_text(texts, arrowprops=dict(arrowstyle='-', color='gray', alpha=0.5))
+        if ADJUST_TEXT:
+            from adjustText import adjust_text
+            adjust_text(texts, arrowprops=dict(arrowstyle='-', color='gray', alpha=0.5))
 
         plt.show()
