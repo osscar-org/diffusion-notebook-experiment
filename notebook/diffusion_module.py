@@ -5,6 +5,10 @@ from scipy.stats import linregress
 import traitlets
 import datetime
 
+# This replaces the %matplotlib widget in the notebook
+from IPython import get_ipython
+get_ipython().run_line_magic('matplotlib', 'widget')
+
 class NotoLogger:
     def __init__(self, event = None):
         self._get_logger()
@@ -68,9 +72,9 @@ def show_diffusion():
     r = np.linspace(0,10,100)
 
     layout = ipw.Layout(width='auto', height='30px')
-    ndots_slider = ipw.IntSlider(value=1000, min=1, max=1000, step=10, description='Number of points', style= {'description_width': 'initial'}, layout=layout, continuous_update=False) # number of points
-    stepsize_slider = ipw.FloatSlider(value=0.05, min=0.01, max=0.1, step=0.01, description='Step size', continuous_update=False, readout=True, readout_format='.2f', style= {'description_width': 'initial'}, layout=layout) # max step size
-    nsteps_slider = ipw.IntSlider(value=5000, min=100, max=10000, step=100, description='Number of steps', continuous_update=False, disabled=False, style= {'description_width': 'initial'}, layout=layout)
+    ndots_slider = ipw.IntSlider(value=1000, min=1, max=1000, step=10, description='Number of points $N$', style= {'description_width': 'initial'}, layout=layout, continuous_update=False) # number of points
+    stepsize_slider = ipw.FloatSlider(value=0.05, min=0.01, max=0.1, step=0.01, description='Step size $l$', continuous_update=False, readout=True, readout_format='.2f', style= {'description_width': 'initial'}, layout=layout) # max step size
+    nsteps_slider = ipw.IntSlider(value=5000, min=100, max=10000, step=100, description='Number of time steps $t$', continuous_update=False, disabled=False, style= {'description_width': 'initial'}, layout=layout)
     px_slider = ipw.FloatSlider(value=0.5, min=0.45, max=0.55, step=0.01, description='$p_x$', continuous_update=False, readout=True, readout_format='.2f', style= {'description_width': 'initial'}, layout=layout) # max step size
     frame_slider = ipw.IntSlider(value=0, min=0, max=nsteps_slider.value, step=100, description='Time step # $(t)$', continuous_update=False, readout=True, disabled=True, style= {'description_width': 'initial'}, layout=layout) # step index indicator and slider
     
@@ -105,8 +109,9 @@ def show_diffusion():
         ax.xaxis.set_ticks(ticks_ax1)
         ax.yaxis.set_ticks(ticks_ax1)
         ax.set_aspect(1.)
-        ax.set_xlabel('x')
-        ax.set_ylabel('y')
+        ax.set_xlabel('x', fontsize=9)
+        ax.set_ylabel('y', fontsize=9)
+        ax.set_title('Position of the points (2D)\n\n', fontsize=9, loc='center', wrap=True)
 
         # draw dots  
         ax.plot(frame_coords[:,0], frame_coords[:,1], '.', alpha=0.1, zorder=11)
@@ -155,7 +160,7 @@ def show_diffusion():
             H = np.ma.outerproduct(gx, gy).data
             ax.imshow(H, origin='lower', interpolation='none', extent=[box_xrange[0], box_xrange[1], box_yrange[0], box_yrange[1]],aspect='equal', alpha=1, cmap='Reds')
         if px_slider.value == 0.5:            
-            ax.legend(loc='lower right', bbox_to_anchor=(1, 1.05))
+            ax.legend(loc='lower center', bbox_to_anchor=(0.5, 1), prop={'size': 9})
 
     def expected_1d(x, N, l):
         """A helper function for plot 2.
@@ -190,12 +195,13 @@ def show_diffusion():
         ax.clear()
         ax.set_xlim(-10, 10)
         ax.set_ylim(0, 0.6)
-        ax.set_xlabel("x")
-        ax.set_ylabel("frequency")
+        ax.set_xlabel("x", fontsize=9)
+        ax.set_ylabel("frequency", fontsize=9)
+        ax.set_title('1D histogram of the position of the points\nalong the x axis\n\n', fontsize=9, loc='center', wrap=True)
         ax.bar(bins[:-1]+h_offset, hist, ec='k', width=bin_width)
         if px_slider.value == 0.5:
             ax.plot(r, gr, 'r--',label='Expected distribution')
-            ax.legend(loc='lower right', bbox_to_anchor=(1, 1.05))
+            ax.legend(loc='lower center', bbox_to_anchor=(0.5, 1), prop={'size': 9})
 
     def plot_radii(ax):
         """draw Plot 3
@@ -217,9 +223,10 @@ def show_diffusion():
             ax.plot(lx, ly, 'r--', lw=1, label='fit')
             #, label='fit: {:.2e} t + {:.2f}'.format(slope, intercept))
 
-            ax.set_xlabel('time step # $(t)$')
-            ax.set_ylabel('$r_{std}^2$')
-            ax.legend(loc='lower right', bbox_to_anchor=(1, 1.05))
+            ax.set_xlabel('time step # $(t)$', fontsize=9)
+            ax.set_ylabel('$r_{std}^2$', fontsize=9)
+            ax.set_title('$r_{std}^2$ as a function of the time step $t$\n\n', fontsize=9, loc='center')
+            ax.legend(loc='lower center', bbox_to_anchor=(0.5, 1), ncol=2, prop={'size': 9})
 
     def plot_frame(change):
         ''' plot current frame for all axis'''
@@ -325,18 +332,21 @@ def show_diffusion():
         ax.xaxis.set_ticks(ticks_ax1)
         ax.yaxis.set_ticks(ticks_ax1)
         ax.set_aspect(1.)
-        ax.set_xlabel('x')
-        ax.set_ylabel('y')
+        ax.set_xlabel('x', fontsize=9)
+        ax.set_ylabel('y', fontsize=9)
+        ax.set_title('Position of the points (2D)\n\n', fontsize=9, loc='center', wrap=True)
 
         ax = ax2
         ax.set_xlim(-10, 10)
         ax.set_ylim(0, 0.6)
-        ax.set_xlabel("x")
-        ax.set_ylabel("frequency")
+        ax.set_xlabel("x", fontsize=9)
+        ax.set_ylabel("frequency", fontsize=9)
+        ax.set_title('1D histogram of the position of the points\nalong the x axis\n\n', fontsize=9, loc='center', wrap=True)
 
         ax = ax3
-        ax.set_xlabel('time step')
-        ax.set_ylabel('$r_{std}^2$')
+        ax.set_xlabel('time step # $(t)$', fontsize=9)
+        ax.set_ylabel('$r_{std}^2$', fontsize=9)
+        ax.set_title('$r_{std}^2$ as a function of the time step $t$\n\n', fontsize=9, loc='center')
 
     def traj_callback(change):
         NotoLogger({'where': 'traj_callback', 'data': change})
@@ -383,8 +393,16 @@ def show_diffusion():
 
     plotdwn_out = ipw.Output()
     with plotdwn_out:
-        fig_dwn, ax3 = plt.subplots(constrained_layout=True, figsize=(3,2))
+        fig_dwn, ax3 = plt.subplots(constrained_layout=True, figsize=(3,2.5))
         plt.show()
+
+    # This gives more space to the plots by hidding the default interactive toolbar (caused by %matplotlib widget)
+    fig_up.canvas.toolbar_visible = False
+    fig_up.canvas.header_visible = False
+    fig_up.canvas.footer_visible = False
+    fig_dwn.canvas.toolbar_visible = False
+    fig_dwn.canvas.header_visible = False
+    fig_dwn.canvas.footer_visible = False
 
     initialize_plot()
     display(ipw.VBox([ipw.HBox([plotup_out]), ipw.HBox([ctrl_widgets, plotdwn_out])]))
