@@ -208,13 +208,14 @@ def show_diffusion():
         if px_slider.value == 0.5:
             # plot r_std^2 (MSD) vs t
             interval = 500
-            ax.plot(r_std_sq[::interval,0], r_std_sq[::interval,1], 'o') # plot every 100 steps
+            ax.plot(r_std_sq[::interval,0], r_std_sq[::interval,1], '.') # plot every few steps
             ax.plot(frame_idx, r_std_sq[frame_idx, 1], 'o', color='green', label='current step')
 
             # plot linear fitting line
             lx = np.linspace(0,nsteps,10)
             ly = lx * slope + intercept
-            ax.plot(lx, ly, 'r--', lw=2, label='fit: {:.2e} t + {:.2f}'.format(slope, intercept))
+            ax.plot(lx, ly, 'r--', lw=1, label='fit')
+            #, label='fit: {:.2e} t + {:.2f}'.format(slope, intercept))
 
             ax.set_xlabel('time step # $(t)$')
             ax.set_ylabel('$r_{std}^2$')
