@@ -1,15 +1,16 @@
 import json
 from collections import defaultdict
 import pylab as plt
-from adjustText import adjust_text
+#from adjustText import adjust_text
 
 events_by_uid = defaultdict(list)
 
 rows = [
-    "IntSlider-Number of points",
+    "IntSlider-Number of points $N$",
     "IntSlider-Time step # $(t)$",
-    "IntSlider-Number of steps",
-    "FloatSlider-Step size",
+    "IntSlider-Number of time steps $t$",
+    "FloatSlider-Step size $l$",
+    "FloatSlider-$p_x$",
     "LoggingPlay-",
     "Button-Simulate",
     "Checkbox-Show trajectory of one particle"
@@ -118,9 +119,10 @@ if __name__ == "__main__":
             # Show bar when no simulation has been computed - we do it
             # when there is an event that resets the simulutions
             if (event['data']['what'], event['data']['which']) in [
-                ('IntSlider', 'Number of points'),
-                ('IntSlider', 'Number of steps'),
-                ('FloatSlider', 'Step size'),
+                ('IntSlider', 'Number of points $N$'),
+                ('IntSlider', 'Number of time steps $t$'),
+                ('FloatSlider', 'Step size $l$'),
+                ('FloatSlider', '$p_x$'),
             ]:
                 last_reset_time = time
 
