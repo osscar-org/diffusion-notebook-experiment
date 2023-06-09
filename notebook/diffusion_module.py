@@ -6,6 +6,7 @@ import traitlets
 import datetime
 import socket
 import logging
+import json
 
 # This replaces the %matplotlib widget in the notebook
 from IPython import get_ipython
@@ -14,14 +15,16 @@ get_ipython().run_line_magic('matplotlib', 'widget')
 class LocalFileLogger:
     def __init__(self, filename):
         self.logger = logging.getLogger(__name__)
-        self.logger.setLevel(logging.INFO)
+        self.logger.setLevel(logging.DEBUG)
 
         handler = logging.FileHandler(filename)
-        handler.setLevel(logging.INFO)
+        handler.setLevel(logging.DEBUG)
 
         # I do formatting by hand elsewhere for convenience, even if
         # not really clean
-        formatter = logging.Formatter('%(message)s')
+        format_string = f"%(asctime)s %(created)f {socket.gethostname()} %(name)s %(levelname)s %(message)s"
+
+        formatter = logging.Formatter(format_string, "%b %e %H:%M:%S")
         handler.setFormatter(formatter)
         self.logger.addHandler(handler)
     
@@ -35,13 +38,9 @@ class LocalFileLogger:
         except Exception:
             return None
 
-    @classmethod
-    def format_data(cls, data):        
-        return f'{datetime.datetime.now().strftime("%b %d %H:%M:%S")} {int(datetime.datetime.now().timestamp())} {socket.gethostname()} {__name__} INFO {data}'
-
     def log(self, data):
         """Dump log to file (via python logging)"""
-        self.logger.info(self.format_data(data))
+        self.logger.debug(json.dumps(data))
 
 global_logger = None
 
@@ -67,12 +66,15 @@ class NotoLogger:
 
     def _get_kernel_id(self):
         import os
-        from ipykernel import zmqshell
+        from ipykernel import zmqshell    
+        from ipykernel.kernelapp import IPKernelApp
+
+
         try:
-            connection_file = os.path.basename(zmqshell.get_connection_file())
+            connection_file = os.path.basename(IPKernelApp.instance().connection_file)
             self.kernel_id = connection_file.split('-', 1)[1].split('.')[0]
-        except Exception:
-            self.kernel_id = 'n/a'
+        except Exception as exc:
+            self.kernel_id = f'{exc}'
 
     def logEvent(self, event):
         data_to_log = {}

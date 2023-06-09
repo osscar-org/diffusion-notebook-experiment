@@ -30,7 +30,7 @@ def parse_lines(lines):
                 "month": month,
                 "day": day,
                 "time": time,
-                "timestamp": int(timestamp),
+                "timestamp": float(timestamp),
                 "server": server,
                 "logger": logger,
                 "level": level,
@@ -52,10 +52,10 @@ if __name__ == "__main__":
     
     parsed_events = parse_lines(lines)
     # Filter
-    filtered_events = [event for event in parsed_events if event['logger'] == "cedeLogger"]
+    filtered_events = [event for event in parsed_events if event['logger'] in ["diffusion_module", "cedeLogger"]]
 
     for event in filtered_events:
-        events_by_uid[event['data']['uid']].append(event)
+        events_by_uid[event['data']['kid']].append(event)
 
     print(f"### {len(filtered_events)} logged events")
     # In principle we could start the time not from the first action, but from the 
@@ -74,7 +74,7 @@ if __name__ == "__main__":
             value_description = f" from value {event['data']['from_value']} to {event['data']['to_value']}" if 'from_value' in event['data'] else ""
             if first_timestamp is None:
                 first_timestamp = event['timestamp']
-            time = event['timestamp'] - first_timestamp
+            time = int(event['timestamp'] - first_timestamp)
 
             print(f"  {time:5d}s: {event['data']['what']}{name}{value_description}")
             # f'{event['data']['where']} on '

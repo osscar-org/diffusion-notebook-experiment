@@ -2,3 +2,6 @@
 .DS_Store
 .ipynb_checkpoints
 __pycache__
+logging-analysis/OSSCAR_testing.log
+notebook/diffusion_module.log
+prod-dokku-diffusion_module.log
