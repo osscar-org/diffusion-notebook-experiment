@@ -4,10 +4,46 @@ import ipywidgets as ipw
 from scipy.stats import linregress
 import traitlets
 import datetime
+import socket
+import logging
 
 # This replaces the %matplotlib widget in the notebook
 from IPython import get_ipython
 get_ipython().run_line_magic('matplotlib', 'widget')
+
+class LocalFileLogger:
+    def __init__(self, filename):
+        self.logger = logging.getLogger(__name__)
+        self.logger.setLevel(logging.INFO)
+
+        handler = logging.FileHandler(filename)
+        handler.setLevel(logging.INFO)
+
+        # I do formatting by hand elsewhere for convenience, even if
+        # not really clean
+        formatter = logging.Formatter('%(message)s')
+        handler.setFormatter(formatter)
+        self.logger.addHandler(handler)
+    
+    @staticmethod
+    def get_kernel_id():
+        import os
+        from ipykernel import zmqshell
+        try:
+            connection_file = os.path.basename(zmqshell.get_connection_file())
+            return connection_file.split('-', 1)[1].split('.')[0]
+        except Exception:
+            return None
+
+    @classmethod
+    def format_data(cls, data):        
+        return f'{datetime.datetime.now().strftime("%b %d %H:%M:%S")} {int(datetime.datetime.now().timestamp())} {socket.gethostname()} {__name__} INFO {data}'
+
+    def log(self, data):
+        """Dump log to file (via python logging)"""
+        self.logger.info(self.format_data(data))
+
+global_logger = None
 
 class NotoLogger:
     def __init__(self, event = None):
@@ -17,11 +53,17 @@ class NotoLogger:
             self.logEvent(event)
 
     def _get_logger(self):
+        global global_logger
         try:
             from cedelogger import cedeLogger
             self.my_logger = cedeLogger()
         except ImportError:
-            self.my_logger = None
+            if global_logger is None:
+                # Create it only once, otherwise we keep adding the handler
+                # to the same logger since it's identified by its name
+                global_logger = LocalFileLogger(filename='diffusion_module.log')
+            self.my_logger = global_logger
+            #self.my_logger = None
 
     def _get_kernel_id(self):
         import os
