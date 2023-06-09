@@ -74,9 +74,9 @@ if __name__ == "__main__":
             value_description = f" from value {event['data']['from_value']} to {event['data']['to_value']}" if 'from_value' in event['data'] else ""
             if first_timestamp is None:
                 first_timestamp = event['timestamp']
-            time = int(event['timestamp'] - first_timestamp)
+            time = event['timestamp'] - first_timestamp
 
-            print(f"  {time:5d}s: {event['data']['what']}{name}{value_description}")
+            print(f"  {int(time):5d}s: {event['data']['what']}{name}{value_description}")
             # f'{event['data']['where']} on '
             row_idx = rows.index(f"{event['data']['what']}-{event['data']['which']}")
             if event['data']['what'] == "LoggingPlay":
