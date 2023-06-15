@@ -4,9 +4,31 @@ import ipywidgets as ipw
 from scipy.stats import linregress
 import traitlets
 import datetime
+import os
 import socket
 import logging
 import json
+
+from voila.utils import wait_for_request
+
+def get_query_string():
+    wait_for_request()  # In case of pre-heated kernels
+    # NOTE: THIS ACTUALLY DOES NOT WORK FOR PRE-HEATED KERNELS!
+    # Not sure why. TODO: check here: https://voila.readthedocs.io/en/stable/customize.html#partially-pre-render-notebook
+    # Maybe it's because it's inside a function and not directly in a notebook cell? Or because there is some non-default configuration?
+    query_string = os.getenv('QUERY_STRING')
+    # Will return None in standard jupyter
+    return query_string
+
+    # For standard Jupyter one might need to take inspiration
+    # from the following lines (still not working, as it takes some
+    # time before the JS is actually executed and the variable updated
+    # in the backend)
+    #simpjs = Javascript('''const queryString = window.location.search; IPython.notebook.kernel.execute("foo='" + queryString + "'")''')
+    #display(simpjs)
+    #query_string = foo
+    #return query_string
+
 
 # This replaces the %matplotlib widget in the notebook
 from IPython import get_ipython
@@ -82,13 +104,18 @@ class NotoLogger:
             data_to_log = {
                 'from_value': event['data']['old'],
                 'to_value': event['data']['new'],
-            }     
+            }    
+        if event['data']['owner'] is not None:
+            data_to_log.update({
+                'what': event['data']['owner'].__class__.__name__,
+                'which': event['data']['owner'].description,             
+                }
+            )
         l = {
                 'raw_event': str(event),
                 'kid': self.kernel_id,
+                'query_string': get_query_string(),
                 'where': event['where'],
-                'what': event['data']['owner'].__class__.__name__,
-                'which': event['data']['owner'].description,             
                 **data_to_log
             }
         #with open('test.log', 'a') as fhandle:
@@ -451,4 +478,6 @@ def show_diffusion():
     initialize_plot()
     display(ipw.VBox([ipw.HBox([plotup_out]), ipw.HBox([ctrl_widgets, plotdwn_out])]))
 
-
+    wait_for_request()  # In case of pre-heated kernels
+    # Log starting time
+    NotoLogger({'where': 'start', 'data': {'type': 'load', 'old': None, 'new': None, 'owner': None}})

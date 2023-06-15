@@ -1,0 +1,28 @@
+{
+    "VoilaConfiguration": {
+        "template": "osscar",
+        "preheat_kernel": true,
+        "enable_nbextensions": true
+    },
+    "VoilaExecutePreprocessor": {
+        "timeout": 180
+    },
+    "MappingKernelManager": {
+      "cull_idle_timeout": 800,
+      "cull_interval": 40,
+      "cull_busy": true
+    },
+    "VoilaKernelManager": {
+        "kernel_pools_config": {
+           "notebook/diffusion_2d.ipynb": {
+               "pool_size": 3,
+	       "kernel_env_variables": {
+		   "VOILA_APP_IP": "0.0.0.0",
+		   "VOILA_APP_PORT": "5000",
+		   "VOILA_WS_PROTOCOL": "ws"
+               }	       
+           }
+        },
+        "fill_delay": 0
+    }
+}
