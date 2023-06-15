@@ -60,8 +60,8 @@ if __name__ == "__main__":
     print(f"### {len(filtered_events)} logged events")
     # In principle we could start the time not from the first action, but from the 
     # execution of the cells - this is also in the logs
-    first_timestamp = None
     for uid, events in events_by_uid.items():
+        first_timestamp = None
         
         fig = plt.figure(figsize=(16,6))
         ax = plt.subplot(111)
@@ -70,10 +70,18 @@ if __name__ == "__main__":
         last_reset_time = 0
         texts = []
         for event in events:
+            print(event)
+            if 'load' in event['data']['raw_event']:
+                if first_timestamp is None:
+                    first_timestamp = event['timestamp']
+                    continue
+                else:
+                    raise ValueError("Error! Loaded twice?")
             name = f" '{event['data']['which']}'" if event['data']['which'] else ""
             value_description = f" from value {event['data']['from_value']} to {event['data']['to_value']}" if 'from_value' in event['data'] else ""
             if first_timestamp is None:
-                first_timestamp = event['timestamp']
+                raise ValueError("Data for a kernel without a 'start' event!")
+                #first_timestamp = event['timestamp']
             time = event['timestamp'] - first_timestamp
 
             print(f"  {int(time):5d}s: {event['data']['what']}{name}{value_description}")
