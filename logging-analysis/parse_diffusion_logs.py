@@ -62,6 +62,7 @@ if __name__ == "__main__":
     # execution of the cells - this is also in the logs
     for uid, events in events_by_uid.items():
         first_timestamp = None
+        query_string = None
         
         fig = plt.figure(figsize=(16,6))
         ax = plt.subplot(111)
@@ -70,13 +71,18 @@ if __name__ == "__main__":
         last_reset_time = 0
         texts = []
         for event in events:
-            print(event)
-            if 'load' in event['data']['raw_event']:
+            if event['data']['where'] == 'start':
                 if first_timestamp is None:
                     first_timestamp = event['timestamp']
                     continue
                 else:
                     raise ValueError("Error! Loaded twice?")
+
+            if query_string is None:
+                query_string = event['data']['query_string']
+            else:
+                assert query_string == event['data']['query_string']
+
             name = f" '{event['data']['which']}'" if event['data']['which'] else ""
             value_description = f" from value {event['data']['from_value']} to {event['data']['to_value']}" if 'from_value' in event['data'] else ""
             if first_timestamp is None:
@@ -142,7 +148,7 @@ if __name__ == "__main__":
         plt.subplots_adjust(left=0.2, right=0.99)
         plt.xlabel("Time from first event (s)")
         plt.xlim(-1, events[-1]['timestamp'] - first_timestamp+1)
-        plt.title(f"Log for user {uid}")
+        plt.title(f"Log for user {uid} ({query_string})")
         # (Optionally) Fix the text location
         if ADJUST_TEXT:
             from adjustText import adjust_text
