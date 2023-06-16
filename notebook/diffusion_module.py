@@ -9,13 +9,17 @@ import socket
 import logging
 import json
 
-from voila.utils import wait_for_request
+from voila.utils import wait_for_request, ENV_VARIABLE
+
+if 'DOKKU_PROXY_SSL_PORT' in os.environ:
+    # Hack for dokku deployment. For some reason, while server IP and WS protocol
+    # are taken from the config in voila.json, the port is ignored?
+    # This is required to make `wait_for_request` work in pre-heated mode
+    # Official docs: https://voila.readthedocs.io/en/stable/customize.html#partially-pre-render-notebook
+    os.environ[ENV_VARIABLE.VOILA_APP_PORT] = os.environ['DOKKU_PROXY_SSL_PORT']
 
 def get_query_string():
     wait_for_request()  # In case of pre-heated kernels
-    # NOTE: THIS ACTUALLY DOES NOT WORK FOR PRE-HEATED KERNELS!
-    # Not sure why. TODO: check here: https://voila.readthedocs.io/en/stable/customize.html#partially-pre-render-notebook
-    # Maybe it's because it's inside a function and not directly in a notebook cell? Or because there is some non-default configuration?
     query_string = os.getenv('QUERY_STRING')
     # Will return None in standard jupyter
     return query_string

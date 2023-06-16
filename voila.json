@@ -1,20 +1,36 @@
 {
     "VoilaConfiguration": {
         "template": "osscar",
-        "preheat_kernel": false,
+        "preheat_kernel": true,
         "enable_nbextensions": true
     },
     "VoilaExecutePreprocessor": {
         "timeout": 180
     },
     "MappingKernelManager": {
-      "cull_idle_timeout": 120,
-      "cull_interval": 60,
-      "cull_busy": true,
-      "kernel_pools_config": {
-          "default": {
-              "pool_size": 1
-          }
-      }
+      "cull_idle_timeout": 800,
+      "cull_interval": 40,
+      "cull_busy": true
+    },
+    "VoilaKernelManager": {
+        "kernel_pools_config": {
+           "diffusion_2d.ipynb": {
+               "pool_size": 3,
+               "kernel_env_variables": {
+                    "VOILA_APP_IP":"osscar-diffusion-experiment.materialscloud.io",
+                    "VOILA_APP_PORT":"443",
+                    "VOILA_WS_PROTOCOL": "wss" 
+                }
+           },
+           "test.ipynb": {
+               "pool_size": 3,
+               "kernel_env_variables": {
+                    "VOILA_APP_IP":"osscar-diffusion-experiment.materialscloud.io",
+                    "VOILA_APP_PORT":"443",
+                    "VOILA_WS_PROTOCOL": "wss" 
+                }
+           }
+        },
+        "fill_delay": 0
     }
 }
