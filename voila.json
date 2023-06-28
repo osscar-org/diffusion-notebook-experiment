@@ -8,9 +8,8 @@
         "timeout": 180
     },
     "MappingKernelManager": {
-      "cull_idle_timeout": 800,
-      "cull_interval": 40,
-      "cull_busy": true
+      "cull_idle_timeout": 1200,
+      "cull_interval": 100
     },
     "VoilaKernelManager": {
         "kernel_pools_config": {

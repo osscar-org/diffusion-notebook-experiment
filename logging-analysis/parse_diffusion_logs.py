@@ -1,4 +1,6 @@
+#!/usr/bin/env python
 import json
+import os
 from collections import defaultdict
 import pylab as plt
 
@@ -50,6 +52,15 @@ if __name__ == "__main__":
     with open(filename) as fhandle:
         lines = fhandle.readlines()
     
+    interactive = sys.argv[2:3] == ['--interactive']
+    subfolder = None
+    if not interactive:
+        subfolder = f'{os.path.splitext(os.path.basename(filename))[0]}-images'
+        if os.path.exists(subfolder):
+            raise ValueError(f"stopping - {subfolder} exists")
+        os.mkdir(subfolder)
+        print(f"Non-interactive mode, writing output to '{subfolder}'")
+
     parsed_events = parse_lines(lines)
     # Filter
     filtered_events = [event for event in parsed_events if event['logger'] in ["diffusion_module", "cedeLogger"]]
@@ -67,6 +78,9 @@ if __name__ == "__main__":
         fig = plt.figure(figsize=(16,6))
         ax = plt.subplot(111)
         print(f"- {len(events)} events for {uid}")
+        if len(events) <= 1:
+            print("  `-> too few events, skipping!")
+            continue
         last_play_time = None
         last_reset_time = 0
         texts = []
@@ -154,4 +168,8 @@ if __name__ == "__main__":
             from adjustText import adjust_text
             adjust_text(texts, arrowprops=dict(arrowstyle='-', color='gray', alpha=0.5))
 
-        plt.show()
+        if interactive:
+            plt.show()
+        else:
+            plt.savefig(f'{subfolder}/{uid}.png')
+        plt.close(fig)
