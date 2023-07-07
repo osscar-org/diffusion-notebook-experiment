@@ -364,16 +364,16 @@ def show_diffusion():
             # Some points might have gone beyond the box.
 
             # I could either reflect them back as a hard wall, or just use PBC. For simplicity, I use PBC
-            divmod_x = np.divmod(new_positions[:, 0] - box_xrange[0], box_xrange[1] - box_xrange[0])
-            divmod_y = np.divmod(new_positions[:, 1] - box_yrange[0], box_yrange[1] - box_yrange[0])
-            new_positions[:,0] = (divmod_x[1] + box_xrange[0])
-            new_positions[:,1] = (divmod_y[1] + box_yrange[0])
+            # divmod_x = np.divmod(new_positions[:, 0] - box_xrange[0], box_xrange[1] - box_xrange[0])
+            # divmod_y = np.divmod(new_positions[:, 1] - box_yrange[0], box_yrange[1] - box_yrange[0])
+            # new_positions[:,0] = (divmod_x[1] + box_xrange[0])
+            # new_positions[:,1] = (divmod_y[1] + box_yrange[0])
 
             # These four lines reflect the particles back as a hard wall.
-            flipx = np.where(divmod_x[0] == 0, 1.0, -1.0)
-            flipy = np.where(divmod_y[0] == 0, 1.0, -1.0)
-            new_positions[:,0] = new_positions[:,0] * flipx
-            new_positions[:,1] = new_positions[:,1] * flipy
+            # flipx = np.where(divmod_x[0] == 0, 1.0, -1.0)
+            # flipy = np.where(divmod_y[0] == 0, 1.0, -1.0)
+            # new_positions[:,0] = new_positions[:,0] * flipx
+            # new_positions[:,1] = new_positions[:,1] * flipy
 
             trajectory.append(new_positions)
         trajectory = np.array(trajectory)
