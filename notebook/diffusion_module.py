@@ -261,8 +261,8 @@ def show_diffusion():
         x_coords = trajectory[frame_idx][:,0]
         nbins = 30
         bin_width = (box_xrange[1] - box_xrange[0]) / nbins
-        hist, bins= np.histogram(x_coords, bins=30, range=box_xrange, density=True)
-    #     hist = hist / (bin_width * N) # normalized count by count/ (N * width) to get f(r)
+        hist, bins= np.histogram(x_coords, bins=30, range=box_xrange, density=False)
+        hist = hist / (bin_width * N) # When density=False in prev line, this will norm count by count/ (N * width) to get f(r)
         h_offset =  0.5 * bin_width # horizontal offset for histogram plot so the first column starts at 0
         r = np.linspace(box_xrange[0], box_xrange[1], 100)
         gr = expected_1d(r, frame_idx, stepsize)
