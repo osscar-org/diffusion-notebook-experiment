@@ -157,7 +157,7 @@ def show_diffusion():
     traj_chkbox = ipw.Checkbox(value=False,description='Show trajectory of one particle', disabled=False, indent=False)
     map_chkbox = ipw.Checkbox(value=False,description='Show density map', disabled=False, indent=False)
 
-    run_btn = ipw.Button(description='Simulate')
+    run_btn = ipw.Button(description='Compute')
     run_btn.style.button_color = 'green'
     play = LoggingPlay(value=0, min=0,
         max=nsteps_slider.value, step=100, disabled=True,
@@ -469,8 +469,20 @@ def show_diffusion():
     px_slider.observe(stop, names='value', type='change')
 
     # group widgets
-    play_wdgt = ipw.HBox([run_btn, play])
-    ctrl_widgets = ipw.VBox([ndots_slider, stepsize_slider, nsteps_slider, px_slider, play_wdgt,  traj_chkbox, frame_slider])
+    # parameters
+    params_label = ipw.HTML(value="<b>1. Select parameters:</b>")
+    params_wdgt = ipw.VBox([params_label, ndots_slider, stepsize_slider, nsteps_slider, px_slider])
+    
+    # compute
+    run_label = ipw.HTML(value="<b>2. Compute:</b>")
+    run_wdgt = ipw.VBox([run_label, run_btn])
+    
+    # run
+    play_label = ipw.HTML(value="<b>3. Play:</b>")
+    play_wdgt = ipw.VBox([play_label, play])
+    
+    # all widgets
+    ctrl_widgets = ipw.VBox([params_wdgt, ipw.HBox([run_wdgt, play_wdgt]), traj_chkbox, frame_slider])
 
     # frame_idx = 0
     # use Output to wrap the plot for better layout
